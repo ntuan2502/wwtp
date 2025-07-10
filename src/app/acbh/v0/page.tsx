@@ -7,10 +7,21 @@ export default function StationLogPage() {
   const [station, setStation] = useState<Station | null>(null);
 
   useEffect(() => {
-    axios
-      .get("/api/station-log/acbh")
-      .then((res) => setStation(res.data.data[0]))
-      .catch((err) => console.error(err));
+    const fetchStation = () => {
+      axios
+        .get("/api/station-log/acbh")
+        .then((res) => setStation(res.data.data[0]))
+        .catch((err) => console.error(err));
+    };
+
+    fetchStation();
+
+    const intervalId = setInterval(
+      fetchStation,
+      Number(process.env.NEXT_PUBLIC_REFRESH_TIME) || 60000
+    );
+
+    return () => clearInterval(intervalId);
   }, []);
 
   if (!station) {
