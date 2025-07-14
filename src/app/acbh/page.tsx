@@ -1,29 +1,64 @@
 "use client";
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { renderLimit } from "@/lib/helper";
+import {
+  formatDateVN,
+  getColorByWarningLevel,
+  renderLimit,
+} from "@/lib/helper";
 import Image from "next/image";
+import { DataAverageItem, Station } from "@/types/data";
+
+const measuringKeys = [
+  "COD",
+  "FLOWIN",
+  "FLOWIN1",
+  "FLOWIN2",
+  "FLOWIN3",
+  "FLOWOUT",
+  "NH4",
+  "TSS",
+  "Temp",
+  "pH",
+];
 
 export default function StationLogPage() {
   const [station, setStation] = useState<Station | null>(null);
+  const [data, setData] = useState<DataAverageItem[]>([]);
+
+  const fetchStation = async () => {
+    try {
+      const res = await axios.get("/api/station-log/acbh");
+      setStation(res.data.data[0]);
+    } catch (err) {
+      console.error("Error fetching station:", err);
+    }
+  };
+
+  const fetchDataAverage = async () => {
+    try {
+      const res = await axios.get<{ data: DataAverageItem[] }>(
+        "/api/data-average"
+      );
+      setData(res.data.data);
+    } catch (err) {
+      console.error("Error fetching data average:", err);
+    }
+  };
 
   useEffect(() => {
-    const fetchStation = () => {
-      axios
-        .get("/api/station-log/acbh")
-        .then((res) => setStation(res.data.data[0]))
-        .catch((err) => console.error(err));
-    };
-
     fetchStation();
-
     const intervalId = setInterval(
       fetchStation,
       Number(process.env.NEXT_PUBLIC_REFRESH_TIME) || 60000
     );
-
     return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    fetchDataAverage();
   }, []);
 
   if (!station) {
@@ -38,6 +73,7 @@ export default function StationLogPage() {
 
   return (
     <div className="min-h-screen p-6">
+      {/* Header */}
       <Card className="col-span-full shadow-none border-none">
         <CardContent className="p-0 mb-6">
           <div className="flex items-center gap-4">
@@ -68,12 +104,12 @@ export default function StationLogPage() {
         </CardContent>
       </Card>
 
+      {/* Realtime Box */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
         {Object.entries(measuringLogs).map(([key, value]) => {
           const matched = station.measuringList.find((m) => m.key === key);
           const unit = matched?.unit || "";
           const name = matched?.name || key;
-
           const formattedValue = new Intl.NumberFormat("vi-VN", {
             minimumFractionDigits: 1,
             maximumFractionDigits: 2,
@@ -82,7 +118,7 @@ export default function StationLogPage() {
           return (
             <div
               key={key}
-              className="bg-[#2196f3] p-4 text-white rounded flex flex-col justify-center items-center text-center h-36"
+              className="bg-[#2196f3] text-white p-4 rounded flex flex-col justify-center items-center text-center h-36"
             >
               <h3 className="text-lg font-bold truncate w-full uppercase">
                 {name}
@@ -98,19 +134,73 @@ export default function StationLogPage() {
         })}
       </div>
 
+      {/* Legend */}
       <div className="mt-10">
         <h4 className="font-bold mb-4 text-lg underline">CHÚ THÍCH</h4>
         <div className="flex flex-wrap gap-4 text-base">
-          <div className="bg-[#007bff] text-white px-6 py-2 rounded font-bold">
+          <div
+            className={`${getColorByWarningLevel(
+              "GOOD"
+            )} px-6 py-2 rounded font-bold`}
+          >
             NẰM TRONG GIỚI HẠN CHO PHÉP
           </div>
-          <div className="bg-[#f57c00] text-white px-6 py-2 rounded font-bold">
+          <div
+            className={`${getColorByWarningLevel(
+              "EXCEEDED_PREPARING"
+            )} px-6 py-2 rounded font-bold`}
+          >
             CHUẨN BỊ VƯỢT GIỚI HẠN CHO PHÉP
           </div>
-          <div className="bg-[#d32f2f] text-white px-6 py-2 rounded font-bold">
+          <div
+            className={`${getColorByWarningLevel(
+              "EXCEEDED"
+            )} px-6 py-2 rounded font-bold`}
+          >
             VƯỢT NGƯỠNG GIỚI HẠN CHO PHÉP
           </div>
         </div>
+      </div>
+
+      {/* Historical Table */}
+      <div className="pt-6">
+        <h2 className="text-2xl font-bold mb-4">Dữ liệu 30 ngày gần nhất</h2>
+        <table className="table-auto w-full text-center border border-collapse border-gray-300">
+          <thead className="bg-gray-100 font-semibold">
+            <tr>
+              <th className="border px-4 py-2">Ngày</th>
+              {measuringKeys.map((key) => (
+                <th key={key} className="border px-4 py-2">
+                  {key}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((day) => (
+              <tr key={day.receivedAt}>
+                <td className="border px-4 py-2 font-semibold">
+                  {formatDateVN(day.receivedAt)}
+                </td>
+                {measuringKeys.map((key) => {
+                  const log = day.measuringLogs?.[key];
+                  const value = log?.value?.toFixed(2) ?? "-";
+                  const level = log?.warningLevel ?? "";
+                  return (
+                    <td
+                      key={key}
+                      className={`border px-4 py-2 ${getColorByWarningLevel(
+                        level
+                      )}`}
+                    >
+                      {value}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

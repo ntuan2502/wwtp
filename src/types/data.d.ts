@@ -1,9 +1,9 @@
-type MeasuringLog = {
-  value: number;
-  statusDevice?: number;
-  minLimit?: number;
-  maxLimit?: number;
-};
+// type MeasuringLog = {
+//   value: number;
+//   statusDevice?: number;
+//   minLimit?: number;
+//   maxLimit?: number;
+// };
 
 type MeasuringListItem = {
   key: string;
@@ -22,3 +22,24 @@ type Station = {
   lastLog?: LastLog;
   measuringList: MeasuringListItem[];
 };
+
+export type WarningLevel = "GOOD" | "EXCEEDED_PREPARING" | "EXCEEDED" | "";
+
+export interface MeasuringLog {
+  value: number;
+  statusDevice?: number;
+  minLimit?: number;
+  maxLimit?: number;
+  min?: number;
+  max?: number;
+  isMerged?: boolean;
+  qcvn?: null | string;
+  warningLevel?: WarningLevel;
+}
+
+export interface DataAverageItem {
+  receivedAt: string;
+  measuringLogs: {
+    [key: string]: MeasuringLog | undefined;
+  };
+}
