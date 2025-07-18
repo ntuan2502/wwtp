@@ -40,7 +40,7 @@ export default function StationLogPage() {
   const fetchDataAverage = async () => {
     try {
       const res = await axios.get<{ data: DataAverageItem[] }>(
-        "/api/data-average"
+        "/api/data-average/acbh"
       );
       setData(res.data.data);
     } catch (err) {
@@ -118,7 +118,9 @@ export default function StationLogPage() {
           return (
             <div
               key={key}
-              className="bg-[#2196f3] text-white p-4 rounded flex flex-col justify-center items-center text-center h-36"
+              className={`${getColorByWarningLevel(
+                value.warningLevel || "GOOD"
+              )} text-white p-4 rounded flex flex-col justify-center items-center text-center h-36`}
             >
               <h3 className="text-lg font-bold truncate w-full uppercase">
                 {name}
