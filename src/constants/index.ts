@@ -1,0 +1,26 @@
+export const measuringKeysACBH = [
+  "COD",
+  "FLOWIN",
+  "FLOWIN1",
+  "FLOWIN2",
+  "FLOWIN3",
+  "FLOWOUT",
+  "NH4",
+  "TSS",
+  "Temp",
+  "pH",
+];
+export const measuringKeysACHL = [
+  "COD",
+  "COLOR",
+  "FLOWIN1",
+  "FLOWIN2",
+  "FLOWIN3",
+  "flow_in_4_1",
+  "FLOWOUT",
+  "Amoni",
+  "TN",
+  "TSS",
+  "Temp",
+  "pH",
+];

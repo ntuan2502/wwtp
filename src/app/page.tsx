@@ -3,9 +3,16 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center min-h-screen gap-2">
       <Link href="/acbh">
-        <Button variant="default" className="hover:cursor-pointer">ACBH WWTP</Button>
+        <Button variant="default" className="hover:cursor-pointer">
+          ACBH WWTP
+        </Button>
+      </Link>
+      <Link href="/achl">
+        <Button variant="default" className="hover:cursor-pointer">
+          ACHL WWTP
+        </Button>
       </Link>
     </div>
   );
