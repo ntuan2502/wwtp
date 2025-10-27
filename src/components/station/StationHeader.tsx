@@ -4,12 +4,16 @@ import type { Station } from "@/types/station.types";
 
 interface StationHeaderProps {
   station: Station;
+  name: string;
+  address: string;
   logoSrc: string; // Nhận logo từ props để làm cho component linh hoạt hơn
   formattedTime: string; // Nhận chuỗi đã được định dạng
 }
 
 export function StationHeader({
   station,
+  name,
+  address,
   logoSrc,
   formattedTime,
 }: StationHeaderProps) {
@@ -26,11 +30,9 @@ export function StationHeader({
           />
           <div>
             <h2 className="text-3xl font-extrabold">
-              {station.name} - Lúc {formattedTime}
+              {name} - Lúc {formattedTime}
             </h2>
-            <p className="text-xl font-semibold mt-1">
-              Địa chỉ: {station.address}
-            </p>
+            <p className="text-xl font-semibold mt-1">Địa chỉ: {address}</p>
           </div>
         </div>
       </CardContent>

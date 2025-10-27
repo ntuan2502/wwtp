@@ -68,6 +68,8 @@ export default function DynamicStationPage({
     <div className="min-h-screen p-6">
       <StationHeader
         station={station}
+        name={config.name}
+        address={config.address}
         logoSrc={config.logo}
         formattedTime={formattedTime}
       />
