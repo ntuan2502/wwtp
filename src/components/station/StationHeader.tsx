@@ -1,9 +1,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Station } from "@/types/station.types";
 
 interface StationHeaderProps {
-  station: Station;
   name: string;
   address: string;
   logoSrc: string; // Nhận logo từ props để làm cho component linh hoạt hơn
@@ -11,7 +9,6 @@ interface StationHeaderProps {
 }
 
 export function StationHeader({
-  station,
   name,
   address,
   logoSrc,
