@@ -24,3 +24,12 @@ export const measuringKeysACHL = [
   "Temp",
   "pH",
 ];
+export const measuringKeysACLT = [
+  "COD",
+  "FLOWIN",
+  "FLOWOUT",
+  "NH4",
+  "TSS",
+  "Temp",
+  "pH",
+];

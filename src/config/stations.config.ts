@@ -1,4 +1,4 @@
-import { measuringKeysACBH, measuringKeysACHL } from "@/constants"; // Giả sử bạn có cả ACHL
+import { measuringKeysACBH, measuringKeysACHL, measuringKeysACLT } from "@/constants"; // Giả sử bạn có cả ACHL
 import { Station } from "@/types/station.types";
 
 export interface StationConfig {
@@ -30,6 +30,16 @@ export const stationsConfig: Record<string, StationConfig> = {
     apiPath: "achl",
     externalApiPath: "QN_AMTA_NUONT1", // <-- Thêm vào đây
     measuringKeys: measuringKeysACHL,
+    findStation: (stations) => stations[0],
+  },
+  aclt: {
+    name: "NHÀ MÁY XỬ LÝ NƯỚC THẢI - CÔNG TY CỔ PHẦN ĐÔ THỊ AMATA LONG THÀNH",
+    address:
+      "Khu Công Nghiệp Công Nghệ Cao Long Thành, Xã Long Thành, Tỉnh Đồng Nai, Việt Nam",
+    logo: "/aclt.png",
+    apiPath: "aclt",
+    externalApiPath: "dnacltnuoalt_1", // <-- Thêm vào đây
+    measuringKeys: measuringKeysACLT,
     findStation: (stations) => stations[0],
   },
 };

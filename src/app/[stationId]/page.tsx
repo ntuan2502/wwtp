@@ -72,7 +72,7 @@ export default function DynamicStationPage({
         logoSrc={config.logo}
         formattedTime={formattedTime}
       />
-      <RealtimeMetricsGrid station={station} />
+      <RealtimeMetricsGrid station={station} /> 
       <Legend />
       <HistoricalTable data={data} measuringKeys={config.measuringKeys} />
     </div>

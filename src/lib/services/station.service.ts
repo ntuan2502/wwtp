@@ -10,10 +10,13 @@ const api = axios.create({
  * TODO: Thay thế việc lấy phần tử [1] bằng cách lọc theo ID ở phía client hoặc
  * tạo một endpoint mới để lấy thông tin của một trạm duy nhất.
  */
-export async function getStations(): Promise<Station[]> {
-  const response = await api.get<{ data: Station[] }>("/api/station-log");
+export async function getStations(apiPath: string): Promise<Station[]> {
+  const response = await api.get<{ data: Station[] }>(
+    `/api/station-log?apiPath=${apiPath}`
+  );
   return response.data.data;
 }
+
 
 /**
  * Lấy dữ liệu trung bình cho một trạm cụ thể.

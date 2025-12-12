@@ -40,7 +40,7 @@ export function useStationData(
         setError(null);
 
         const [allStations, dataAvg] = await Promise.all([
-          getStations(),
+          getStations(stationApiPath),
           getStationDataAverage(stationApiPath),
         ]);
 
@@ -63,7 +63,7 @@ export function useStationData(
 
     const intervalId = setInterval(async () => {
       try {
-        const allStations = await getStations();
+        const allStations = await getStations(stationApiPath);
         const updatedStation = stationIdFinder(allStations);
         if (updatedStation) {
           setStation(updatedStation);

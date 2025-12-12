@@ -14,6 +14,11 @@ export default function Home() {
           ACHL WWTP
         </Button>
       </Link>
+      <Link href="/aclt">
+        <Button variant="default" className="hover:cursor-pointer">
+          ACLT WWTP
+        </Button>
+      </Link>
     </div>
   );
 }
