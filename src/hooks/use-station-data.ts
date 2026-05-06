@@ -15,11 +15,11 @@ interface UseStationDataResult {
 /**
  * Custom hook để lấy và cập nhật dữ liệu cho một trạm cụ thể.
  * @param stationApiPath - Path API định danh cho trạm (ví dụ: 'acbh').
- * @param stationIdFinder - Một hàm để tìm đúng trạm từ danh sách trả về.
+ * @param stationKey - Key ổn định của trạm từ API (ví dụ: 'DN_AMAT_NUOAMA').
  */
 export function useStationData(
   stationApiPath: string,
-  stationIdFinder: (stations: Station[]) => Station | undefined
+  stationKey: string
 ): UseStationDataResult {
   const [station, setStation] = useState<Station | null>(null);
   const [data, setData] = useState<StationDataAverage[]>([]);
@@ -27,12 +27,14 @@ export function useStationData(
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Chỉ chạy khi stationApiPath có giá trị
-    if (!stationApiPath) {
+    if (!stationApiPath || !stationKey) {
       setIsLoading(false);
       setError("Không có định danh trạm.");
       return;
     }
+
+    const findStation = (stations: Station[]) =>
+      stations.find((s) => s.key === stationKey);
 
     const fetchInitialData = async () => {
       try {
@@ -44,9 +46,11 @@ export function useStationData(
           getStationDataAverage(stationApiPath),
         ]);
 
-        const currentStation = stationIdFinder(allStations);
+        const currentStation = findStation(allStations);
         if (!currentStation) {
-          throw new Error(`Không tìm thấy trạm với định danh phù hợp.`);
+          throw new Error(
+            `Không tìm thấy trạm với key "${stationKey}".`
+          );
         }
 
         setStation(currentStation);
@@ -64,7 +68,7 @@ export function useStationData(
     const intervalId = setInterval(async () => {
       try {
         const allStations = await getStations(stationApiPath);
-        const updatedStation = stationIdFinder(allStations);
+        const updatedStation = findStation(allStations);
         if (updatedStation) {
           setStation(updatedStation);
         }
@@ -74,7 +78,8 @@ export function useStationData(
     }, Number(process.env.NEXT_PUBLIC_REFRESH_TIME) || 60000);
 
     return () => clearInterval(intervalId);
-  }, [stationApiPath, stationIdFinder]); // Hook sẽ chạy lại nếu path thay đổi
+  }, [stationApiPath, stationKey]);
 
   return { station, data, isLoading, error };
 }
+

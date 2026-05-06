@@ -23,7 +23,7 @@ export default function DynamicStationPage({
 
   const { station, data, isLoading, error } = useStationData(
     config?.apiPath,
-    config?.findStation
+    config?.stationKey
   );
 
   const formattedTime = useMemo(() => {

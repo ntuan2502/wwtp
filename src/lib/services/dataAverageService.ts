@@ -1,4 +1,3 @@
-import { stationsConfig } from "@/config/stations.config";
 import { FetchStationDataAverageParams } from "@/types/station.types";
 import axios from "axios";
 
@@ -49,11 +48,7 @@ export async function fetchDataAverage({
   // Gọi API bằng axios
   const response = await axios.get(apiUrl, {
     headers: {
-      // Đảm bảo biến môi trường được định nghĩa và không rỗng
-      Authorization:
-        apiPath != stationsConfig["aclt"].externalApiPath
-          ? process.env.NEXT_PUBLIC_API_TOKEN!
-          : process.env.NEXT_PUBLIC_API_TOKEN_ACLT!,
+      Authorization: process.env.API_TOKEN!,
     },
     params,
   });

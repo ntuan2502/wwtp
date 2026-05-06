@@ -39,6 +39,7 @@ export interface LastLog {
  * Đại diện cho thông tin cơ bản của một trạm quan trắc.
  */
 export interface Station {
+  key: string;
   name: string;
   address: string;
   lastLog?: LastLog;
