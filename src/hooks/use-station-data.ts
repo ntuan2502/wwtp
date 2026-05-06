@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import useSWR from "swr";
 import {
   getStations,
   getStationDataAverage,
 } from "@/lib/services/station.service";
 import type { Station, StationDataAverage } from "@/types/station.types";
+
+const REFRESH_INTERVAL =
+  Number(process.env.NEXT_PUBLIC_REFRESH_TIME) || 60000;
 
 interface UseStationDataResult {
   station: Station | null;
@@ -14,72 +17,60 @@ interface UseStationDataResult {
 
 /**
  * Custom hook để lấy và cập nhật dữ liệu cho một trạm cụ thể.
- * @param stationApiPath - Path API định danh cho trạm (ví dụ: 'acbh').
- * @param stationKey - Key ổn định của trạm từ API (ví dụ: 'DN_AMAT_NUOAMA').
+ * Sử dụng SWR cho auto-refresh, dedup, retry, và pause khi tab ẩn.
  */
 export function useStationData(
   stationApiPath: string,
   stationKey: string
 ): UseStationDataResult {
-  const [station, setStation] = useState<Station | null>(null);
-  const [data, setData] = useState<StationDataAverage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!stationApiPath || !stationKey) {
-      setIsLoading(false);
-      setError("Không có định danh trạm.");
-      return;
+  // Fetch realtime station info — auto refresh mỗi 30s/60s
+  const {
+    data: allStations,
+    error: stationError,
+    isLoading: stationLoading,
+  } = useSWR(
+    stationApiPath ? `station-log/${stationApiPath}` : null,
+    () => getStations(stationApiPath),
+    {
+      refreshInterval: REFRESH_INTERVAL,
+      revalidateOnFocus: true,
+      dedupingInterval: 5000,
     }
+  );
 
-    const findStation = (stations: Station[]) =>
-      stations.find((s) => s.key === stationKey);
+  // Fetch historical data — chỉ lấy 1 lần (dữ liệu 30 ngày, không cần refresh liên tục)
+  const {
+    data: historicalData,
+    error: dataError,
+    isLoading: dataLoading,
+  } = useSWR(
+    stationApiPath ? `data-average/${stationApiPath}` : null,
+    () => getStationDataAverage(stationApiPath),
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+    }
+  );
 
-    const fetchInitialData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+  // Tìm station theo key ổn định
+  const station =
+    allStations?.find((s) => s.key === stationKey) ?? null;
 
-        const [allStations, dataAvg] = await Promise.all([
-          getStations(stationApiPath),
-          getStationDataAverage(stationApiPath),
-        ]);
+  const isLoading = stationLoading || dataLoading;
 
-        const currentStation = findStation(allStations);
-        if (!currentStation) {
-          throw new Error(
-            `Không tìm thấy trạm với key "${stationKey}".`
-          );
-        }
+  // Tổng hợp error message
+  const errorMsg = stationError
+    ? stationError.message
+    : dataError
+      ? dataError.message
+      : stationApiPath && !stationLoading && allStations && !station
+        ? `Không tìm thấy trạm với key "${stationKey}".`
+        : null;
 
-        setStation(currentStation);
-        setData(dataAvg);
-      } catch (err) {
-        console.error("Error fetching initial station data:", err);
-        setError(err instanceof Error ? err.message : "Lỗi không xác định.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchInitialData();
-
-    const intervalId = setInterval(async () => {
-      try {
-        const allStations = await getStations(stationApiPath);
-        const updatedStation = findStation(allStations);
-        if (updatedStation) {
-          setStation(updatedStation);
-        }
-      } catch (err) {
-        console.error("Error fetching station update:", err);
-      }
-    }, Number(process.env.NEXT_PUBLIC_REFRESH_TIME) || 60000);
-
-    return () => clearInterval(intervalId);
-  }, [stationApiPath, stationKey]);
-
-  return { station, data, isLoading, error };
+  return {
+    station,
+    data: historicalData ?? [],
+    isLoading,
+    error: errorMsg,
+  };
 }
-
