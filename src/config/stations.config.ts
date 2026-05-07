@@ -13,7 +13,7 @@ export interface StationConfig {
 export const stationsConfig: Record<string, StationConfig> = {
   acbh: {
     name: "NHÀ MÁY XỬ LÝ NƯỚC THẢI - CÔNG TY CỔ PHẦN ĐÔ THỊ AMATA BIÊN HÒA",
-    address: "KCN Long Bình (Amata), Phường Long Bình, Thành phố Đồng Nai, Việt Nam",
+    address: "Khu Công Nghiệp Long Bình (Amata), Phường Long Bình, Thành phố Đồng Nai, Việt Nam",
     logo: "/acbh.png",
     apiPath: "acbh",
     externalApiPath: "DN_AMAT_NUOAMA",
@@ -23,7 +23,7 @@ export const stationsConfig: Record<string, StationConfig> = {
   achl: {
     name: "NHÀ MÁY XỬ LÝ NƯỚC THẢI - CÔNG TY CỔ PHẦN ĐÔ THỊ AMATA HẠ LONG",
     address:
-      "Khu Công nghiệp Sông Khoai, Phường Hiệp Hòa, Tỉnh Quảng Ninh, Việt Nam",
+      "Khu Công Nghiệp Sông Khoai, Phường Hiệp Hòa, Tỉnh Quảng Ninh, Việt Nam",
     logo: "/achl.png",
     apiPath: "achl",
     externalApiPath: "QN_AMTA_NUONT1",
@@ -33,7 +33,7 @@ export const stationsConfig: Record<string, StationConfig> = {
   aclt: {
     name: "NHÀ MÁY XỬ LÝ NƯỚC THẢI - CÔNG TY CỔ PHẦN ĐÔ THỊ AMATA LONG THÀNH",
     address:
-      "Khu Công Nghiệp Công Nghệ Cao Long Thành, Xã Long Thành, Thành phố Đồng Nai, Việt Nam",
+      "Khu Công Nghiệp Công Nghệ Cao Long Thành, Phường Long Thành, Thành phố Đồng Nai, Việt Nam",
     logo: "/aclt.png",
     apiPath: "aclt",
     externalApiPath: "wwtp__amata_long_thanh_1",
